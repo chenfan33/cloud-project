@@ -1,0 +1,133 @@
+syntax = "proto2";
+
+message kv_command {
+  optional string com = 1;
+  optional string usr = 2;
+  optional string key = 3;
+  optional int64 seq = 4;
+  optional bytes value1 = 5;
+  optional bytes value2 = 6;
+  repeated string addrs = 7;
+}
+
+message kv_ret {
+  optional int32 status = 1;
+  optional bytes value = 2;
+  message KeyValue {
+    optional bytes key = 1;
+    optional bytes value = 2;
+  }
+
+  repeated KeyValue key_values = 3;
+}
+
+enum MasterRequestType {
+  // HEARTBEAT messages are sent by frontend services (such as mail, storage
+  // etc.) to the master node to report server state.
+  HEARTBEAT = 1;
+  // FRONTEND messages are sent by frontend services to ask the master node
+  // for backend server addresses information
+  FRONTEND_INITIAL = 2;
+  BACKEND_INITIAL = 3;
+  EMAIL_INITIAL = 4;
+  USR_TO_BACKEND = 5;
+}
+
+// Request send by frontend services (mail, storage etc.) to master node
+message MasterRequest {
+  optional MasterRequestType type = 1;
+  optional string addr = 2;
+}
+
+// Response to FRONTEND typed MasterRequests
+message FrontEndResp {
+  repeated string backend_addrs = 1;
+}
+
+/********************* Storage Service Protos *****************/
+enum StorageServiceType {
+  FILE_UPLOAD = 1;  // Upload file (aka create file)
+  FILE_DOWNLOAD = 2;
+  FILE_RENAME = 3;
+  FILE_MOVE = 4;
+  FILE_DELE = 5;
+  DIR_CREATE = 6;
+  DIR_RENAME = 7;
+  DIR_MOVE = 8;
+  DIR_DELE = 9;
+  DIR_QUERY = 10;
+  // Request to obtain complete path for all directories under a specified user
+  QUERY_ALL_DIR = 11;
+  // Add request for viewing directory content
+}
+
+message FileUploadReq {
+  // `path` is the complete filepath
+  optional string path = 1;
+  optional string content = 2;
+}
+
+message FileOrDirRenameReq {
+  // old_path should be the old, complete filepath
+  optional string old_path = 1;
+  // new_name refers to the new file name only (relative path)
+  optional string new_name = 2;
+}
+
+message FileOrDirMoveReq {
+  // File and folder names should be complete filepath
+  optional string path = 1;
+  // new_dir refers to the complete directory path. For instance, if
+  // file /d1/d2/f1.txt is moved from d2 to /d1/d3/, then new_dir = /d1/d3/
+  optional string new_dir = 3;
+}
+
+message StorageServiceReq {
+  optional StorageServiceType type = 1;
+  optional string username = 2;
+  oneof request {
+    FileUploadReq file_upload_req = 3;
+    // Complete filepath for downloading
+    string file_download_req = 4;
+    // Complete path for creation or viewing directory content
+    string dir_create_or_query_req = 5;
+    // Complete dir/file path for deletiong
+    string delete_req = 6;
+    FileOrDirRenameReq rename_req = 7;
+    FileOrDirMoveReq move_req = 8;
+    string query_all_file_to_move = 9;
+  }
+}
+
+message StorageServiceResp {
+  message DirEntry {
+    optional string name = 1;
+    optional bool is_dir = 2;
+  }
+
+  message DirInfo {
+    optional string name = 1;
+    repeated DirEntry entries = 2;
+  }
+
+  message MovableDirs {
+    repeated DirEntry entries = 1;
+  }
+
+  enum Status {
+    SUCCESS = 1;
+    FAIL = 2;
+  }
+
+  optional string username = 1;
+  optional Status status = 2;
+  optional string error_msg = 3;
+  oneof resp {
+    bytes file_download = 4;
+    DirInfo dir_info = 5;
+    // Returns the updated filepath after move or rename requests
+    // string new_path = 6;
+    // Returns all the movable dirs
+    MovableDirs movable_dirs = 6;
+  }
+}

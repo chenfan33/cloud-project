@@ -1,0 +1,56 @@
+./frontend -p $portnum
+
+Function implemented: 
+Login : 
+    click login and directly render home.html
+
+Home :
+    redirect to /file, /user, /about
+
+Admin, About, User:
+    hardcoded page
+
+File :
+    only rendering the Page and send POST request when click upload
+
+Format below
+"""
+POST /file HTTP/1.1
+-----------------------------22615736121907253034946325117
+Content-Disposition: form-data; name="$username"; filename="2102647-db41408f.png"
+Content-Type: image/png
+
+�PNG
+"""
+
+
+Need to do:
+1. Adding Load balancing
+2. Admin :
+- need to replace hardcoded data to real data stored
+
+3. Login :
+- authentication by connecting to kv store
+- login failure Page
+
+4. Signup :
+- signup failure 
+- posting data into kv
+
+5. File service:
+- retrieve file&folder info from kv
+- upload data to kv
+- move/delete/download/rename send request
+- update data from above actions
+
+6. Account setting :
+- need to replace hardcoded data into real data
+- send change password request and handle 
+
+7. Logout :
+- clearing sessionid etc...
+
+
+
+
+

@@ -1,0 +1,62 @@
+Team name:  ____Team T01_____
+Team members: Yichun Cao, Fan Chen, Yazhe Feng, Yinda Zhang 
+SEAS login: ycao4,cfan3,yazhefen,yindaz
+
+Which features did you implement? 
+  Entire Assignment
+
+Did you complete any extra-credit tasks? If so, which ones?
+ Well-designed, pretty user interface :) 
+
+Did you personally write _all_ the code you are submitting
+(other than code from the course web page)?
+  [✔] Yes
+  [ ] No
+
+Did you copy any code from the Internet, or from classmates?
+  [ ] Yes
+  [✔] No
+
+Did you collaborate with anyone on this assignment?
+  [ ] Yes
+  [✔] No
+
+
+Project Details
+============
+
+Repository structure
+--------------------
+*  `backend/`: the code for backend servers
+*  `common/`: the common function (e.g., tcp, file)
+*  `email/`: the code for email servers
+*  `frontend/`: the code for frontend servers
+*  `master/`: the code for master servers
+
+Requirements
+-------
+- protobuf
+- g++
+
+How to run
+-------
+```bash
+$ sudo apt update && sudo apt install protobuf-compiler
+$ python3 make.py -v <debug_log_level>
+$ python3 run.py
+```
+
+For least log prints, use `python3 make.py -v 1`.
+The configuration of backend servers can be modified in `common/backend.txt`.
+Now there are nine backend servers (partitioned into 3 clusters).
+
+Notes
+-------
+- After restarting a node, please allow some time for syncing to finish before killing the primary. 
+Following are some example log messages that indicate sync finished: 
+  - `[KvStore 127.0.0.1:8000]: Finished syncing with status 0. Continue accepting commands….`
+  - `#KvCache-Secondary: Sent syncing finished resp to primary: SYNC DONE`
+
+- User name and file name currently have constraints (for instance, 
+no `/`, `(`, `)`, or space). Errors might occur due to unaccepted names. This was simply 
+to reduce some complexity and allow easier regex matching. 
